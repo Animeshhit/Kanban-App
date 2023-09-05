@@ -1,0 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@700&family=Poppins:wght@400;500;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+.heading-font {
+  font-family: "Inter", sans-serif;
+}
+
+.para-font {
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: #001c30;
+}
