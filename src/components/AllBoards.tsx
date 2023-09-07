@@ -1,36 +1,104 @@
 import Task from "../assets/task.svg";
-import AddIcon from "../assets/AddIconWhite.svg";
-import { useSelector } from "react-redux/es/exports";
+import { useSelector, useDispatch } from "react-redux";
+import { useRef, useState } from "react";
+import generateUniqueId from "../helper";
+import { createNewBoard } from "../state/action-creator";
+import { NavLink } from "react-router-dom";
 
 const AllBoards = () => {
-  const { tasks } = useSelector((state) => state);
+  // Data from Storage & Setting Dispatch
+  const StoredData = useSelector((state: any) => state.tasks);
+  const dispatch = useDispatch();
+
+  // showing and hiding the add board card
+  const [AddBoardCard, setAddBoardCard] = useState(false);
+  // new Board Value
+
+  // getting the input element
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const showHideBtnCard = () => {
+    setAddBoardCard(!AddBoardCard);
+
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
+  };
+
+  const AddNewBoard = async () => {
+    const valueOfNewCard = inputRef.current.value;
+    if (!valueOfNewCard) return;
+    let newBoardData = {
+      _id: generateUniqueId(),
+      name: valueOfNewCard,
+      cards: [],
+    };
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+    try {
+      dispatch(createNewBoard(newBoardData));
+    } catch (err) {}
+  };
+
+  const handleInputBlur = () => {
+    AddNewBoard();
+    setAddBoardCard(false);
+  };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    AddNewBoard();
+    setAddBoardCard(false);
+  };
 
   return (
     <>
-      <div className="board_list mt-6">
-        <p className="text-[gray] tracking-wider px-6">ALL BOARDS ({tasks.length})</p>
+      <div className="board_list mt-6 ">
+        <p className="text-[gray] tracking-wider px-6">
+          ALL BOARDS ({StoredData.length})
+        </p>
         <ul className="mt-6">
-          {tasks.map((items) => {
-            return `<li className="flex mb-4 items-center w-max py-3 pl-6 pr-14 rounded-r-full bg-[#64CCC5] gap-2 heading-font">
-            <img src={Task} alt="task" />
-            <span>Platform Launch</span>
-          </li>`;
+          {StoredData.map((items: any, index: number) => {
+            return (
+              <NavLink
+                to={`/${items._id}`}
+                activeClassName="active"
+                className="flex mb-4 items-center w-full max-w-1/2 py-3 px-6 rounded-r-full gap-2 heading-font text-white"
+                key={index}
+              >
+                <span className="material-symbols-outlined">
+                  space_dashboard
+                </span>
+                <span className="heading-font">{items.name}</span>
+              </NavLink>
+            );
           })}
-          {/* <li className="flex mb-4 items-center w-max py-3 pl-6 pr-14 rounded-r-full bg-[#64CCC5] gap-2 heading-font">
-            <img src={Task} alt="task" />
-            <span>Platform Launch</span>
-          </li>
-          <li className="flex mb-4 items-center w-max py-3 pl-6 pr-14 rounded-r-full bg-[#64CCC5] gap-2 heading-font">
-            <img src={Task} alt="task" />
-            <span>Marketing Plan</span>
-          </li>
-          <li className="flex mb-4 items-center w-max py-3 pl-6 pr-14 rounded-r-full bg-[#64CCC5] gap-2 heading-font">
-            <img src={Task} alt="task" />
-            <span>Roadmap</span>
-          </li> */}
+          {AddBoardCard ? (
+            <li className="flex mb-4 items-center w-4/5 py-3 pl-6 pr-6 rounded-r-full bg-[#64CCC5] gap-2 heading-font">
+              <img src={Task} alt="task" />
+              <form
+                onSubmit={handleFormSubmit}
+                className="flex items-center justify-center"
+              >
+                <input
+                  type="text"
+                  className="w-40 bg-transparent border-none outline-none placeholder:text-[rgba(0,0,0,0.5)] heading-font"
+                  onBlur={handleInputBlur}
+                  ref={inputRef}
+                  placeholder="Name In Two or Three Words..."
+                />
+              </form>
+            </li>
+          ) : (
+            ""
+          )}
           <button
             type="button"
             className="flex items-center w-max py-3 pl-6 pr-14 rounded-r-full text-[#64CCC5] gap-2 heading-font"
+            onClick={showHideBtnCard}
           >
             <span>+</span>
             <p>Create New Board</p>

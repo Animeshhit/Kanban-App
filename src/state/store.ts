@@ -4,4 +4,4 @@ import reducers from './reducers';
 
 const store = createStore(reducers,{},applyMiddleware(thunk));
 
-export default store;
+export default store;   

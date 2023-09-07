@@ -1,21 +1,25 @@
-type TaskType = {
-    taskes:[]
+import { DataType, DataTypeDefault } from "../../types/DataType";
+import { getData } from "../../helper";
+import { Action } from "redux";
+
+if (localStorage.getItem("kanbanboard_tasks") == null) {
+  localStorage.setItem("kanbanboard_tasks", "[]");
 }
 
-type ActionType = {
-    type:String,
-    payload?:{}
-}
+const taskReducer = (
+  state: DataType | DataTypeDefault = getData(),
+  action: Action
+) => {
+  console.log(action);
+  switch (action.type) {
+    case "CREATE_NEW_BOARD":
+    case "CREATE_NEW_CARD":
+    case "UPDATE_CARDS":
+    case "NEW_TASK":
+      return action.payload;
+    default:
+      return state;
+  }
+};
 
-const getDataFromStorage = localStorage.getItem("kanbanboard_task");
-const initialKanban:TaskType | null = getDataFromStorage ? JSON.parse(getDataFromStorage) : null;
-
-
-const taskReducer = (state=initialKanban,action:ActionType) => {
-    switch(action.type) {
-        default:
-            return state ? state:[];
-    }
-}
-
-export {taskReducer};
+export { taskReducer };
